@@ -1,11 +1,9 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
-  name: go-app
-  labels:
-    app: go-app
+  name: go-app-rollout
 spec:
-  replicas: 2
+  replicas: 4
   selector:
     matchLabels:
       app: go-app
@@ -15,7 +13,41 @@ spec:
         app: go-app
     spec:
       containers:
-      - name: go-app
-        image: ayushthe1/go-app:21
-        ports:
-        - containerPort: 8081
+        - name: go-app
+          image: ayushthe1/go-app:21
+          ports:
+            - containerPort: 8081
+  strategy:
+    canary:
+      steps:
+        - setWeight: 10
+          pause: {}
+        - setWeight: 20
+          pause: {duration: 10}
+        - setWeight: 50
+          pause: {duration: 10}
+        - setWeight: 100
+  revisionHistoryLimit: 2
+
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: go-app
+#   labels:
+#     app: go-app
+# spec:
+#   replicas: 2
+#   selector:
+#     matchLabels:
+#       app: go-app
+#   template:
+#     metadata:
+#       labels:
+#         app: go-app
+#     spec:
+#       containers:
+#       - name: go-app
+#         image: ayushthe1/go-app:21
+#         ports:
+#         - containerPort: 8081
