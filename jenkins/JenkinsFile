@@ -33,7 +33,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                     sh '''
                         git config user.email "ayush.jenkins@gmail.com"
-                        git config user.name "Ayush"
+                        git config user.name "Ayush-jenkins"
                         BUILD_NUMBER=${BUILD_NUMBER}
                         sed -i "s|image: ayushthe1/go-app:[0-9]*|image: ayushthe1/go-app:${BUILD_NUMBER}|g" manifests/deployment.yml
                         git add manifests/deployment.yml
