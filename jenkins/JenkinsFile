@@ -1,29 +1,31 @@
 pipeline {
-    agent {
-        docker {
-            image 'ayushthe1/my-golang-with-docker-cli'
-            args '-v /var/run/docker.sock:/var/run/docker.sock'
-        }
-    }
+    agent any
+
     stages {
         stage('Checkout') {
             steps {
                 sh 'echo "Checking out code..."'
             }
         }
+
         stage('Build and Push Docker Image') {
-            environment {
-                DOCKER_IMAGE = "ayushthe1/go-app:${BUILD_NUMBER}"
-            }
-            steps {
-                script {
-                    echo "Building Docker image..."
-                    sh 'docker build -t ${DOCKER_IMAGE} ./go-app'
-                    echo "Pushing Docker image..."
-                    sh 'docker push ${DOCKER_IMAGE}'
-                }
+        agent any
+        environment {
+          DOCKER_IMAGE = "ayushthe1/go-app:${BUILD_NUMBER}"
+        // DOCKERFILE_LOCATION = "java-maven-app-and-manifest/spring-boot-app/Dockerfile"
+        // Create the docker cred in the jenkins managed credentials
+          REGISTRY_CREDENTIALS = credentials('docker-cred')
+        }
+        steps {
+          script {
+            sh 'cd go-app/ && docker build -t ${DOCKER_IMAGE} .'
+            def dockerImage = docker.image("${DOCKER_IMAGE}")
+            docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
+                dockerImage.push()
             }
         }
+      }
+    }
         stage('Update Deployment File') {
             environment {
                 GIT_REPO_NAME = "planetai-assignment"
