@@ -8,6 +8,21 @@ pipeline {
             }
         }
 
+        stage('Check Commit Message') {
+            steps {
+                script {
+                    def commitMsg = sh(script: 'git log --format=%B -n 1 HEAD', returnStdout: true).trim()
+                    if (commitMsg.contains('[CI JOB]')) {
+                        echo "Commit message contains [CI JOB], aborting the pipeline."
+                        currentBuild.result = 'ABORTED'
+                        error("Commit message contains [CI JOB], aborting the pipeline.")
+                    } else {
+                        echo "Commit message does not contain [CI JOB], proceeding with the pipeline."
+                    }
+                }
+            }
+        }
+
         stage('Build and Push Docker Image') {
             environment {
                 DOCKER_IMAGE = "ayushthe1/go-app:${BUILD_NUMBER}"
@@ -37,20 +52,9 @@ pipeline {
                         BUILD_NUMBER=${BUILD_NUMBER}
                         sed -i "s|image: ayushthe1/go-app:[0-9]*|image: ayushthe1/go-app:${BUILD_NUMBER}|g" manifests/deployment.yml
                         git add manifests/deployment.yml
-                        git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                        git commit -m "[CI JOB] Update deployment image to version ${BUILD_NUMBER}"
                         git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
                     '''
-                }
-            }
-        }
-    }
-    
-    post {
-        always {
-            script {
-                if (env.CHANGE_AUTHOR == 'Ayush-jenkins') {
-                    echo "Change triggered by Jenkins, aborting the pipeline."
-                    currentBuild.result = 'ABORTED'
                 }
             }
         }
