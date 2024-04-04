@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: go-app
-        image: ayushthe1/go-app:{{BUILD_NUMBER}}
+        image: ayushthe1/go-app:21
         ports:
         - containerPort: 8081
