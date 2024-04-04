@@ -1,20 +1,5 @@
-def ignoreChangesInPusher() {
-    def pusher = sh(returnStdout: true, script: 'git log -1 --pretty=format:%an').trim()
-    echo "Last commit was by: ${pusher}"
-    
-    if (pusher == 'Ayush-jenkins') {
-        echo "Ignoring changes triggered by ${pusher}"
-        currentBuild.result = 'ABORTED'
-    }
-}
-
 pipeline {
     agent any
-
-    triggers {
-        // Call the ignoreChangesInPusher function before starting the pipeline
-        ignoreChangesInPusher()
-    }
 
     stages {
         stage('Checkout') {
@@ -24,7 +9,6 @@ pipeline {
         }
 
         stage('Build and Push Docker Image') {
-            agent any
             environment {
                 DOCKER_IMAGE = "ayushthe1/go-app:${BUILD_NUMBER}"
                 REGISTRY_CREDENTIALS = credentials('docker-cred')
@@ -56,6 +40,17 @@ pipeline {
                         git commit -m "Update deployment image to version ${BUILD_NUMBER}"
                         git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
                     '''
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            script {
+                if (env.CHANGE_AUTHOR == 'Ayush-jenkins') {
+                    echo "Change triggered by Jenkins, aborting the pipeline."
+                    currentBuild.result = 'ABORTED'
                 }
             }
         }
