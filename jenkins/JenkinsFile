@@ -12,8 +12,6 @@ pipeline {
         agent any
         environment {
           DOCKER_IMAGE = "ayushthe1/go-app:${BUILD_NUMBER}"
-        // DOCKERFILE_LOCATION = "java-maven-app-and-manifest/spring-boot-app/Dockerfile"
-        // Create the docker cred in the jenkins managed credentials
           REGISTRY_CREDENTIALS = credentials('docker-cred')
         }
         steps {
