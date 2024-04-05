@@ -59,19 +59,54 @@ This repository consists of 3 directories.
 ## Output Screenshots
 
 * **Jenkins Pipeline**
+
 ![Jenkins Pipeline](./jenkins.png)
 
 
 * **ArgoCD Deployment**
+
 ![ArgoCD UI deployment](./argo.png)
 
 
 * **Canary Deployment Rollout**
+
 ![ArgoCD UI deployment](./rollout.png)
+
 
 
 ## Challenges Faced
 
-1) **Avoiding infinte loop pipeline in Jenkins**
+### 1. Avoiding Infinite Loop in Jenkins Pipeline
 
-2) **Configuring the github webhook for a service running locally using Ngrok**
+**Problem:**
+My Jenkins pipeline, triggered by a 'github hook trigger for GITScm polling', caused an infinite loop. The pipeline itself pushed commits to the GitHub repository whenever it updated the Docker image version in the `rollout.yml` file. Consequently, each push from the pipeline triggered the GitHub webhook, prompting the Jenkins server to rerun the pipeline.
+
+**Solution:**
+To address this issue, I introduced a new stage in my Jenkinsfile. This stage checks the commit message that triggered the pipeline. If the message contains `[CI JOB]`, the pipeline execution is aborted. Subsequently, any commits made by the Jenkins pipeline to the repository include the `[CI JOB]` keyword.
+
+
+
+### 2. Configuring GitHub Webhook for Local Service Using Ngrok
+
+**Problem:**
+Setting up a GitHub webhook requires a payload URL to which notifications are sent when commits are pushed. As my Jenkins server runs on localhost, it lacks a live URL accessible over the internet.
+
+**Solution:**
+To resolve this challenge, I utilized [Ngrok](https://ngrok.com/), a tool for creating secure tunnels to local servers. Ngrok enables the exposure of a local server behind a NAT or firewall to the public internet over a secure tunnel. Acting as a reverse proxy, Ngrok forwards traffic from a publicly accessible endpoint to a specified port on the local machine.
+
+---
+
+
+## Cleanup
+
+### 1. Remove the rollout and the associated resources
+
+argocd app delete go-app-rollout --cascade
+
+### 2. Uninstall argocd
+
+kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+### 3. Uninstall argo-rollouts
+
+kubectl delete -n argo-rollouts -f https://raw.githubusercontent.com/argoproj/argo-rollouts/stable/manifests/install.yaml
