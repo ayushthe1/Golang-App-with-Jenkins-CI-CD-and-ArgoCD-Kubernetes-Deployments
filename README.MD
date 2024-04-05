@@ -3,7 +3,7 @@
 
 In this assignment, I dockerized a Golang web application and set up a local Jenkins server with a Minikube cluster containing ArgoCD for Kubernetes deployments. Utilizing a Jenkins pipeline triggered by webhooks upon new commits, the pipeline automates image building, pushing to DockerHub, and updating manifest files. ArgoCD monitors changes in the manifests directory, facilitating smooth deployments using Argo Rollout with canary strategies.
 
-![Project Diagram](./pa-2.drawio.png)
+![Project Diagram](./pa-4.drawio.png)
 
 
 This repository consists of 3 directories. 
@@ -53,6 +53,21 @@ This repository consists of 3 directories.
    - Established a robust CI/CD pipeline where any commits pushed to the repository trigger the Jenkins server via the webhook.
    - The pipeline builds and pushes the new image to DockerHub, updating the `rollout.yml` file.
    - ArgoCD detects changes in the manifest file, automatically syncing to deploy the latest image version using canary deployment.
+
+
+
+## Output Screenshots
+
+* **Jenkins Pipeline**
+![Jenkins Pipeline](./jenkins.png)
+
+
+* **ArgoCD Deployment**
+![ArgoCD UI deployment](./argo.png)
+
+
+* **Canary Deployment Rollout**
+![ArgoCD UI deployment](./rollout.png)
 
 
 ## Challenges Faced
