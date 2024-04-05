@@ -39,7 +39,7 @@ pipeline {
             }
         }
 
-        stage('Update Deployment File') {
+        stage('Update Rollout File') {
             environment {
                 GIT_REPO_NAME = "planetai-assignment"
                 GIT_USER_NAME = "ayushthe1"
@@ -50,8 +50,8 @@ pipeline {
                         git config user.email "ayush.jenkins@gmail.com"
                         git config user.name "Ayush-jenkins"
                         BUILD_NUMBER=${BUILD_NUMBER}
-                        sed -i "s|image: ayushthe1/go-app:[0-9]*|image: ayushthe1/go-app:${BUILD_NUMBER}|g" manifests/deployment.yml
-                        git add manifests/deployment.yml
+                        sed -i "s|image: ayushthe1/go-app:[0-9]*|image: ayushthe1/go-app:${BUILD_NUMBER}|g" manifests/rollout.yml
+                        git add manifests/rollout.yml
                         git commit -m "[CI JOB] Update deployment image to version ${BUILD_NUMBER}"
                         git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
                     '''
