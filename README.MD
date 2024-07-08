@@ -1,7 +1,7 @@
 
-# Planet AI Assignment
+# Dockerized Golang Web App with Jenkins CI/CD and ArgoCD Kubernetes Deployments
 
-In this assignment, I dockerized a Golang web application and set up a local Jenkins server with a Minikube cluster containing ArgoCD for Kubernetes deployments. Utilizing a Jenkins pipeline triggered by webhooks upon new commits, the pipeline automates image building, pushing to DockerHub, and updating manifest files. ArgoCD monitors changes in the manifests directory, facilitating smooth deployments using Argo Rollout with canary strategies.
+In this project, I dockerized a Golang web application and set up a local Jenkins server with a Minikube cluster containing ArgoCD for Kubernetes deployments. Utilizing a Jenkins pipeline triggered by webhooks upon new commits, the pipeline automates image building, pushing to DockerHub, and updating manifest files. ArgoCD monitors changes in the manifests directory, facilitating smooth deployments using Argo Rollout with canary strategies.
 
 ![Project Diagram](./pa-4.drawio.png)
 
